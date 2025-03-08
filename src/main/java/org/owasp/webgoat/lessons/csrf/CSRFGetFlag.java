@@ -22,6 +22,7 @@
 
 package org.owasp.webgoat.lessons.csrf;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -29,8 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.owasp.webgoat.container.i18n.PluginMessages;
 import org.owasp.webgoat.container.session.UserSessionData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,10 +41,10 @@ public class CSRFGetFlag {
   @Autowired UserSessionData userSessionData;
   @Autowired private PluginMessages pluginMessages;
 
-  @RequestMapping(
+  @PostMapping(
       path = "/csrf/basic-get-flag",
-      produces = {"application/json"},
-      method = RequestMethod.POST)
+      produces = {"application/json"}
+  )
   @ResponseBody
   public Map<String, Object> invoke(HttpServletRequest req) {
 
@@ -56,13 +56,13 @@ public class CSRFGetFlag {
 
     if ("NULL".equals(referer)) {
       if ("true".equals(req.getParameter("csrf"))) {
-        Random random = new Random();
+        Random random = new SecureRandom();
         userSessionData.setValue("csrf-get-success", random.nextInt(65536));
         response.put("success", true);
         response.put("message", pluginMessages.getMessage("csrf-get-null-referer.success"));
         response.put("flag", userSessionData.getValue("csrf-get-success"));
       } else {
-        Random random = new Random();
+        Random random = new SecureRandom();
         userSessionData.setValue("csrf-get-success", random.nextInt(65536));
         response.put("success", true);
         response.put("message", pluginMessages.getMessage("csrf-get-other-referer.success"));
@@ -73,7 +73,7 @@ public class CSRFGetFlag {
       response.put("message", "Appears the request came from the original host");
       response.put("flag", null);
     } else {
-      Random random = new Random();
+      Random random = new SecureRandom();
       userSessionData.setValue("csrf-get-success", random.nextInt(65536));
       response.put("success", true);
       response.put("message", pluginMessages.getMessage("csrf-get-other-referer.success"));
